@@ -64,6 +64,15 @@ sysinfo.txt
 *.unitypackage.meta
 *.app
 
+# Plastic SCM
+.plastic/
+
+# VS Code
+.vscode/
+
+# Visual Studio configuration
+.vsconfig
+
 # Crashlytics generated file
 crashlytics-build.properties
 
