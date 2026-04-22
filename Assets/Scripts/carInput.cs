@@ -21,10 +21,7 @@ public class carInput : MonoBehaviour
         else if (Keyboard.current.dKey.isPressed)
             inputVector.x = 1;
 
-        if (Keyboard.current.wKey.isPressed)
             inputVector.y = 1;
-        else if (Keyboard.current.sKey.isPressed)
-            inputVector.y = -1;
 
         carController.SetInputVector(inputVector);
     }
