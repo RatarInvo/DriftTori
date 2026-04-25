@@ -1,4 +1,0 @@
-repository "DriftTori/DriftTori@5772621013669@cloud"
-  path "/"
-    br "/main"
-    co "/main"
