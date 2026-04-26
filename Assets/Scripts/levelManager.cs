@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class levelManager : MonoBehaviour
 {
@@ -30,13 +31,19 @@ public class levelManager : MonoBehaviour
 
         if (currentLevel >= levelSpawnPoints.Length)
         {
+            car.carStarted = false;
+            car.engineMultiplier = 0f;
+            car.isFinishing = false;
+            car.ReleaseBrake();
+            SceneManager.LoadScene("Main");
             Debug.Log("All levels complete!");
             return;
         }
 
         Transform spawn = levelSpawnPoints[currentLevel];
         car.TeleportTo(spawn.position, spawn.eulerAngles.z);
-
+        car.ReleaseBrake();
+        car.isFinishing = false;
         car.carStarted = false;
         car.engineMultiplier = 0f;
     }

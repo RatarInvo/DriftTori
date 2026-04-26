@@ -15,6 +15,10 @@ public class CarController : MonoBehaviour
 
     public bool carStarted = false;
     public float engineMultiplier = 0f;
+    public bool isFinishing = false;
+
+    bool isBraking = false;
+    float brakeDeceleration = 15f;
 
     float accelerationInput = 0;
     float steeringInput = 0;
@@ -45,6 +49,18 @@ public class CarController : MonoBehaviour
         carStarted = true;
     }
 
+    // Add this public method to trigger braking from FinishLine
+    public void BrakeToStop()
+    {
+        isBraking = true;
+    }
+
+    // Add this public method so LevelManager can release the brake after teleport
+    public void ReleaseBrake()
+    {
+        isBraking = false;
+    }
+
     void FixedUpdate()
     {
         if (!carStarted)
@@ -59,6 +75,17 @@ public class CarController : MonoBehaviour
             );
         }
 
+        if (isBraking)
+        {
+            // Rapidly drain velocity to zero
+            carRigidbody2D.linearVelocity = Vector2.MoveTowards(
+                carRigidbody2D.linearVelocity,
+                Vector2.zero,
+                brakeDeceleration * Time.fixedDeltaTime
+            );
+            return; // Skip engine and steering while braking
+        }
+
         ApplyEngineForce();
         KillorthogonalVelocity();
         ApplySeering();
@@ -68,6 +95,9 @@ public class CarController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Wall"))
         {
+            if (isFinishing) 
+                return;
+
             ResetToSpawn();
         }
     }
