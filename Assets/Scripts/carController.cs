@@ -9,6 +9,13 @@ public class CarController : MonoBehaviour
     public float driftFactor = 0.99f;
     public float maxSpeed = 20;
 
+    [Header("Engine Ramp Up")]
+    [Tooltip("How many seconds to reach full acceleration from a standstill")]
+    public float engineRampDuration = 2.5f;
+
+    public bool carStarted = false;
+    public float engineMultiplier = 0f;
+
     float accelerationInput = 0;
     float steeringInput = 0;
     float rotationAngle = 0;
@@ -27,23 +34,36 @@ public class CarController : MonoBehaviour
 
     void Start()
     {
-        // FIX 1: Sync rotationAngle to wherever the car actually starts in the scene
-        // so MoveRotation() doesn't snap it on frame 1
         rotationAngle = transform.eulerAngles.z;
 
-        // FIX 2: Record spawn state for wall-reset
         spawnPosition = transform.position;
         spawnRotation = rotationAngle;
     }
 
+    public void StartCar()
+    {
+        carStarted = true;
+    }
+
     void FixedUpdate()
     {
+        if (!carStarted)
+            return;
+
+        if (engineMultiplier < 1f)
+        {
+            engineMultiplier = Mathf.MoveTowards(
+                engineMultiplier,
+                1f,
+                Time.fixedDeltaTime / engineRampDuration
+            );
+        }
+
         ApplyEngineForce();
         KillorthogonalVelocity();
         ApplySeering();
     }
 
-    // FIX 2: Called automatically by Unity when this collider hits another
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Wall"))
@@ -52,35 +72,11 @@ public class CarController : MonoBehaviour
         }
     }
 
-    // Add this public method — called by LevelManager for both level transitions and wall resets
-    public void TeleportTo(Vector2 position, float zRotation)
-    {
-        carRigidbody2D.linearVelocity = Vector2.zero;
-        carRigidbody2D.angularVelocity = 0f;
-
-        transform.position = position;
-        transform.rotation = Quaternion.Euler(0, 0, zRotation);
-
-        // Update internal angle and spawn state so steering and wall-reset both stay in sync
-        rotationAngle = zRotation;
-        spawnPosition = position;
-        spawnRotation = zRotation;
-    }
-
     void ResetToSpawn()
     {
         TeleportTo(spawnPosition, spawnRotation);
-
-        // Stop all momentum
-        carRigidbody2D.linearVelocity = Vector2.zero;
-        carRigidbody2D.angularVelocity = 0f;
-
-        // Teleport back
-        transform.position = spawnPosition;
-        transform.rotation = Quaternion.Euler(0, 0, spawnRotation);
-
-        // Re-sync internal angle tracker so steering doesn't snap
-        rotationAngle = spawnRotation;
+        engineMultiplier = 0f;
+        carStarted = false;
     }
 
     void ApplyEngineForce()
@@ -91,7 +87,7 @@ public class CarController : MonoBehaviour
         if (velocityVsUp < -maxSpeed * 0.5f && accelerationInput < 0) return;
         if (carRigidbody2D.linearVelocity.sqrMagnitude > maxSpeed * maxSpeed && accelerationInput > 0) return;
 
-        Vector2 engineForceVector = transform.up * accelerationInput * AccelerationFactor;
+        Vector2 engineForceVector = transform.up * accelerationInput * AccelerationFactor * engineMultiplier;
         carRigidbody2D.AddForce(engineForceVector, ForceMode2D.Force);
     }
 
@@ -107,6 +103,17 @@ public class CarController : MonoBehaviour
         Vector2 forwardVelocity = transform.up * Vector2.Dot(carRigidbody2D.linearVelocity, transform.up);
         Vector2 rightVelocity = transform.right * Vector2.Dot(carRigidbody2D.linearVelocity, transform.right);
         carRigidbody2D.linearVelocity = forwardVelocity + rightVelocity * driftFactor;
+    }
+
+    public void TeleportTo(Vector2 position, float zRotation)
+    {
+        carRigidbody2D.linearVelocity = Vector2.zero;
+        carRigidbody2D.angularVelocity = 0f;
+        transform.position = position;
+        transform.rotation = Quaternion.Euler(0, 0, zRotation);
+        rotationAngle = zRotation;
+        spawnPosition = position;
+        spawnRotation = zRotation;
     }
 
     public void SetInputVector(Vector2 inputVector)

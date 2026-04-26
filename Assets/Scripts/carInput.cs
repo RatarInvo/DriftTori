@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class carInput : MonoBehaviour
 {
     CarController carController;
+    bool gameStarted = false;
 
     void Awake()
     {
@@ -12,6 +13,20 @@ public class carInput : MonoBehaviour
 
     void Update()
     {
+        if (!carController.carStarted)
+            gameStarted = false;
+
+        // Wait for W press to start the car
+        if (!gameStarted)
+        {
+            if (Keyboard.current.wKey.wasPressedThisFrame)
+            {
+                gameStarted = true;
+                carController.StartCar();
+            }
+            return; // Don't process any input until started
+        }
+
         Vector2 inputVector = Vector2.zero;
         inputVector.y = 1;
 

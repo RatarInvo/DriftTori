@@ -11,10 +11,6 @@ public class pauseMenu : MonoBehaviour
 
     void Update()
     {
-        // Old Input System (caused your error):
-        // if (Input.GetKeyDown(KeyCode.Escape))
-
-        // New Input System (matches the rest of your project):
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (isPaused) Resume();
@@ -36,10 +32,9 @@ public class pauseMenu : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    // Wire this to your "Main Menu" button's OnClick in the Inspector
     public void GoToMainMenu()
     {
-        Time.timeScale = 1f; // Always reset before loading a scene
+        Time.timeScale = 1f;
         SceneManager.LoadScene("Main");
     }
 }
