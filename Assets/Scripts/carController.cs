@@ -5,7 +5,7 @@ public class CarController : MonoBehaviour
 {
     [Header("Car Settings")]
     public float AccelerationFactor = 15.0f;
-    public float turnFactor = 3.75f;
+    public float turnFactor = 4f;
     public float driftFactor = 0.99f;
     public float maxSpeed = 20;
 
