@@ -23,6 +23,8 @@ public class carInput : MonoBehaviour
             {
                 gameStarted = true;
                 carController.StartCar();
+
+                LevelTitleUI.Instance.HideTitle();
             }
             return; // Don't process any input until started
         }
@@ -33,6 +35,10 @@ public class carInput : MonoBehaviour
         if (Keyboard.current.aKey.isPressed)
             inputVector.x = -1;
         else if (Keyboard.current.dKey.isPressed)
+            inputVector.x = 1;
+        else if (Keyboard.current.leftArrowKey.isPressed)
+            inputVector.x = -1;
+        else if (Keyboard.current.rightArrowKey.isPressed)
             inputVector.x = 1;
 
         carController.SetInputVector(inputVector);

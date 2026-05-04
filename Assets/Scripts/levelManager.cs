@@ -22,7 +22,10 @@ public class levelManager : MonoBehaviour
         car = FindAnyObjectByType<CarController>();
 
         if (levelSpawnPoints.Length > 0)
+        {
             car.TeleportTo(levelSpawnPoints[0].position, levelSpawnPoints[0].eulerAngles.z);
+            LevelTitleUI.Instance.ShowTitle(0); // Show Level1 title on game start
+        }
     }
 
     public void AdvanceToNextLevel()
@@ -46,5 +49,7 @@ public class levelManager : MonoBehaviour
         car.isFinishing = false;
         car.carStarted = false;
         car.engineMultiplier = 0f;
+
+        LevelTitleUI.Instance.ShowTitle(currentLevel);
     }
 }
