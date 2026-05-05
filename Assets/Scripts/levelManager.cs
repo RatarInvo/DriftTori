@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class levelManager : MonoBehaviour
 {
@@ -28,10 +29,22 @@ public class levelManager : MonoBehaviour
         }
     }
 
+     void Update()
+    {
+        if (Keyboard.current != null &&
+            Keyboard.current.qKey.wasPressedThisFrame &&
+            (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed) &&
+            (Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed))
+        {
+            AdvanceToNextLevel();
+        }
+    }
+
+
     public void AdvanceToNextLevel()
     {
         currentLevel++;
-
+        
         if (currentLevel >= levelSpawnPoints.Length)
         {
             car.carStarted = false;
@@ -43,13 +56,23 @@ public class levelManager : MonoBehaviour
             return;
         }
 
+        TeleportToCurrentLevel();
+    }
+
+    
+
+    private void TeleportToCurrentLevel()
+    {
         Transform spawn = levelSpawnPoints[currentLevel];
         car.TeleportTo(spawn.position, spawn.eulerAngles.z);
         car.ReleaseBrake();
         car.isFinishing = false;
         car.carStarted = false;
         car.engineMultiplier = 0f;
-
         LevelTitleUI.Instance.ShowTitle(currentLevel);
     }
+
+
+    
+
 }
