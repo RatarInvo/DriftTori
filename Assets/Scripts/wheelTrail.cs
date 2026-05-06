@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class wheelTrail : MonoBehaviour
 {
-
     CarController carController;
     TrailRenderer trailRenderer;
+
+    [Header("Drift Sound")]
+    public AudioClip driftClip;
 
     void Awake()
     {
@@ -25,6 +27,12 @@ public class wheelTrail : MonoBehaviour
         if (carController.isTireScreeching(out float lateralVelocity))
         {
             trailRenderer.emitting = true;
-        } else { trailRenderer.emitting = false; }
+            AudioManager.Instance.PlayDrift(driftClip);
+        } 
+        else 
+        { 
+            trailRenderer.emitting = false;
+            AudioManager.Instance.StopDrift();
+        }
     }
 }

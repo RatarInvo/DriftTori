@@ -73,6 +73,16 @@ public class levelManager : MonoBehaviour
     }
 
 
-    
+    public void RestartFromBeginning()
+    {
+        currentLevel = 0;
+        Transform spawn = levelSpawnPoints[0];
+        car.TeleportTo(spawn.position, spawn.eulerAngles.z);
+        car.ReleaseBrake();
+        car.isFinishing = false;
+        car.carStarted = false;
+        car.engineMultiplier = 0f;
+        LevelTitleUI.Instance.ShowTitle(0);
+    }
 
 }

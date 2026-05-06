@@ -13,6 +13,9 @@ public class CarController : MonoBehaviour
     [Tooltip("How many seconds to reach full acceleration from a standstill")]
     public float engineRampDuration = 2.5f;
 
+    [Header("Audio")]
+    public AudioClip wallHitClip;
+
     public bool carStarted = false;
     public float engineMultiplier = 0f;
     public bool isFinishing = false;
