@@ -1,8 +1,27 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance;
+    public static AudioManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                GameObject go = new GameObject("AudioManager");
+                _instance = go.AddComponent<AudioManager>();
+                DontDestroyOnLoad(go);
+            }
+            return _instance;
+        }
+    }
+
+    static AudioManager _instance;
+
+    [Header("Scene Music - set these in the Inspector")]
+    public AudioClip mainMenuMusic;
+    public AudioClip gameMusic;
 
     AudioSource musicSource;
     AudioSource sfxSource;
@@ -13,17 +32,40 @@ public class AudioManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null)
+        if (_instance == null)
         {
-            Instance = this;
+            _instance = this;
             DontDestroyOnLoad(gameObject);
+            SetupAudioSources();
         }
         else
         {
             Destroy(gameObject);
             return;
         }
+    }
 
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Automatically swap music based on which scene just loaded
+        if (scene.name == "Main")
+            PlayMusic(mainMenuMusic);
+        else
+            PlayMusic(gameMusic);
+    }
+
+    void SetupAudioSources()
+    {
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.loop = true;
         musicSource.volume = musicVolume;
@@ -38,7 +80,8 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMusic(AudioClip clip)
     {
-        if (musicSource.clip == clip) return; // Don't restart same track
+        if (clip == null) return;
+        if (musicSource.clip == clip && musicSource.isPlaying) return;
         musicSource.clip = clip;
         musicSource.Play();
     }
