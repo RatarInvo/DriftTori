@@ -1,58 +1,103 @@
-//using UnityEngine;
+using System.Collections;
+using UnityEngine;
 
-//public class LivesSystem : MonoBehaviour
-//{
-//    public static LivesSystem Instance;
+public class LivesSystem : MonoBehaviour
+{
+    public static LivesSystem Instance;
 
-//    [Header("Lives")]
-//    public int maxLives = 3;
-//    int currentLives;
+    [Header("Lives")]
+    public int maxLives = 3;
+    int currentLives;
+    public bool isGameOver = false;
 
-//    [Header("Heart Sprites above car - assign 3 heart GameObjects")]
-//    public GameObject[] heartObjects;
+    [Header("Hearts UI")]
+    public GameObject heartsContainer;
+    public GameObject[] heartObjects;
 
-//    void Awake()
-//    {
-//        if (Instance == null) Instance = this;
-//        else Destroy(gameObject);
-//    }
+    [Header("Blink Animation")]
+    public int blinkCount = 3;
+    public float blinkInterval = 0.12f;
+    public float showAfterBlinkDuration = 0.4f;
 
-//    void Start()
-//    {
-//        currentLives = maxLives;
-//        UpdateHearts();
-//    }
+    Coroutine loseLifeCoroutine;
 
-//    public void LoseLife()
-//    {
-//        if (currentLives <= 0) return;
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
-//        currentLives--;
-//        UpdateHearts();
+    void Start()
+    {
+        currentLives = maxLives;
+        heartsContainer.SetActive(true);
+        UpdateHearts();
+    }
 
-//        if (currentLives <= 0)
-//            OnGameOver();
-//    }
+    public void LoseLife()
+    {
+        if (currentLives <= 0) return;
 
-//    public void ResetLives()
-//    {
-//        currentLives = maxLives;
-//        UpdateHearts();
-//    }
+        if (loseLifeCoroutine != null)
+            StopCoroutine(loseLifeCoroutine);
 
-//    void UpdateHearts()
-//    {
-//        for (int i = 0; i < heartObjects.Length; i++)
-//            heartObjects[i].SetActive(i < currentLives);
-//    }
+        loseLifeCoroutine = StartCoroutine(LoseLifeSequence());
+    }
 
-//    void OnGameOver()
-//    {
-//        ResetLives();
+    IEnumerator LoseLifeSequence()
+    {
+        int losingIndex = currentLives - 1;
+        currentLives--;
 
-//        if (LevelManager.Instance != null)
-//            LevelManager.Instance.RestartFromBeginning();
-//        else
-//            Debug.LogWarning("LevelManager instance not found on game over.");
-//    }
-//}
+        if (currentLives <= 0)
+            isGameOver = true;
+
+        for (int i = 0; i < heartObjects.Length; i++)
+            heartObjects[i].SetActive(i <= losingIndex);
+
+        // Blink the losing heart
+        for (int i = 0; i < blinkCount; i++)
+        {
+            heartObjects[losingIndex].SetActive(false);
+            yield return new WaitForSeconds(blinkInterval);
+            heartObjects[losingIndex].SetActive(true);
+            yield return new WaitForSeconds(blinkInterval);
+        }
+
+        heartObjects[losingIndex].SetActive(false);
+
+        yield return new WaitForSeconds(showAfterBlinkDuration);
+
+        if (currentLives <= 0)
+            OnGameOver();
+    }
+
+    public void ResetLives()
+    {
+        if (loseLifeCoroutine != null)
+        {
+            StopCoroutine(loseLifeCoroutine);
+            loseLifeCoroutine = null;
+        }
+
+        currentLives = maxLives;
+        isGameOver = false;
+        heartsContainer.SetActive(true);
+        UpdateHearts();
+    }
+
+    void UpdateHearts()
+    {
+        for (int i = 0; i < heartObjects.Length; i++)
+            heartObjects[i].SetActive(i < currentLives);
+    }
+
+    void OnGameOver()
+    {
+        // All lives gone - reset to level start with fresh lives
+        ResetLives();
+
+        CarController car = FindAnyObjectByType<CarController>();
+        if (car != null) car.ResetToSpawn();
+    }
+}

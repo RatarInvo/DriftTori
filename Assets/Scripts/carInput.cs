@@ -6,6 +6,9 @@ public class carInput : MonoBehaviour
     CarController carController;
     bool gameStarted = false;
 
+    [Header("Audio")]
+    public AudioClip engineStartClip; 
+
     void Awake()
     {
         carController = GetComponent<CarController>();
@@ -23,8 +26,11 @@ public class carInput : MonoBehaviour
             {
                 gameStarted = true;
                 carController.StartCar();
-
                 LevelTitleUI.Instance.HideTitle();
+
+                // Play engine start sound
+                if (engineStartClip != null)
+                    AudioManager.Instance.PlaySFX(engineStartClip);
             }
             return; // Don't process any input until started
         }

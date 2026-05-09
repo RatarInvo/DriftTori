@@ -59,14 +59,12 @@ public class levelManager : MonoBehaviour
     void StartNormalLevel()
     {
         Transform spawn = levelSpawnPoints[currentLevel];
-
         car.TeleportTo(spawn.position, spawn.eulerAngles.z);
-
         car.ReleaseBrake();
         car.isFinishing = false;
         car.carStarted = false;
         car.engineMultiplier = 0f;
-
+        LivesSystem.Instance.ResetLives();
         LevelTitleUI.Instance.ShowTitle(currentLevel);
     }
 
@@ -74,34 +72,25 @@ public class levelManager : MonoBehaviour
     void StartRandomLevel()
     {
         if (playedMaps.Count >= levelSpawnPoints.Length)
-        {
             playedMaps.Clear();
-        }
 
         List<int> availableMaps = new List<int>();
-
         for (int i = 0; i < levelSpawnPoints.Length; i++)
         {
             if (!playedMaps.Contains(i))
-            {
                 availableMaps.Add(i);
-            }
         }
 
         currentMapIndex = availableMaps[Random.Range(0, availableMaps.Count)];
-
         playedMaps.Add(currentMapIndex);
 
         Transform spawn = levelSpawnPoints[currentMapIndex];
-
         car.TeleportTo(spawn.position, spawn.eulerAngles.z);
-
         car.ReleaseBrake();
         car.isFinishing = false;
         car.carStarted = false;
         car.engineMultiplier = 0f;
-
-        // Shows Level 1, 2, 3...
+        LivesSystem.Instance.ResetLives();
         LevelTitleUI.Instance.ShowTitle(campaignLevel - 1);
     }
 
@@ -134,17 +123,12 @@ public class levelManager : MonoBehaviour
     public void RestartFromBeginning()
     {
         currentLevel = 0;
-
-        campaignLevel = 1;
-        playedMaps.Clear();
-
-        if (campaignMode)
-        {
-            StartRandomLevel();
-        }
-        else
-        {
-            StartNormalLevel();
-        }
+        Transform spawn = levelSpawnPoints[0];
+        car.TeleportTo(spawn.position, spawn.eulerAngles.z);
+        car.ReleaseBrake();
+        car.isFinishing = false;
+        car.carStarted = false;
+        car.engineMultiplier = 0f;
+        LevelTitleUI.Instance.ShowTitle(0);
     }
 }

@@ -57,7 +57,6 @@ public class AudioManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Automatically swap music based on which scene just loaded
         if (scene.name == "Main")
             PlayMusic(mainMenuMusic);
         else
@@ -91,19 +90,21 @@ public class AudioManager : MonoBehaviour
     public void PlaySFX(AudioClip clip)
     {
         if (clip == null) return;
-        sfxSource.PlayOneShot(clip, sfxVolume);
+        sfxSource.PlayOneShot(clip, 1f);
     }
 
-    public void PlayDrift(AudioClip clip)
+    public void InitDrift(AudioClip clip)
     {
-        if (driftSource.isPlaying || clip == null) return;
+        if (clip == null) return;
         driftSource.clip = clip;
+        driftSource.volume = 0f;
+        driftSource.loop = true;
         driftSource.Play();
     }
 
-    public void StopDrift()
+    public void SetDriftVolume(float targetVolume)
     {
-        if (driftSource.isPlaying) driftSource.Stop();
+        driftSource.volume = Mathf.Lerp(driftSource.volume, targetVolume * sfxVolume, Time.deltaTime * 8f);
     }
 
     public void SetMusicVolume(float volume)

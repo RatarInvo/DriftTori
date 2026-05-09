@@ -5,7 +5,6 @@ public class finishLine : MonoBehaviour
 {
     [Tooltip("Seconds to wait after crossing before teleporting")]
     public float transitionDelay = 2f;
-
     bool triggered = false;
 
     void OnTriggerEnter2D(Collider2D other)
@@ -13,12 +12,15 @@ public class finishLine : MonoBehaviour
         if (triggered) 
             return;
 
-        if (other.CompareTag("Player"))
-        {
-            triggered = true;
-            CarController car = other.GetComponent<CarController>();
-            StartCoroutine(FinishSequence(car));
-        }
+        if (!other.CompareTag("Player")) 
+            return;
+
+        // Don't advance if the player just lost their last life
+        if (LivesSystem.Instance.isGameOver) return;
+
+        triggered = true;
+        CarController car = other.GetComponent<CarController>();
+        StartCoroutine(FinishSequence(car));
     }
 
     void OnTriggerExit2D(Collider2D other)

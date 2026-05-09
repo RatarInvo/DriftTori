@@ -1,4 +1,5 @@
 using Unity.Mathematics;
+using System.Collections;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
@@ -15,6 +16,11 @@ public class CarController : MonoBehaviour
 
     [Header("Audio")]
     public AudioClip wallHitClip;
+
+    [Header("Wall Bounce")]
+    public float bounceForce = 8f;
+
+    bool isInvincible = false;
 
     public bool carStarted = false;
     public float engineMultiplier = 0f;
@@ -96,20 +102,35 @@ public class CarController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall"))
-        {
-            if (isFinishing) 
-                return;
+        if (!collision.gameObject.CompareTag("Wall")) return;
+        if (isFinishing) return;
+        if (isInvincible) return;
 
-            ResetToSpawn();
-        }
+        // Play sound here instead of in ResetToSpawn
+        AudioManager.Instance.PlaySFX(wallHitClip);
+
+        Vector2 bounceDirection = collision.contacts[0].normal;
+        carRigidbody2D.linearVelocity = bounceDirection * bounceForce;
+
+        LivesSystem.Instance.LoseLife();
+
+        StartCoroutine(InvincibilityFrames());
     }
 
-    void ResetToSpawn()
+    IEnumerator InvincibilityFrames()
+    {
+        isInvincible = true;
+        yield return new WaitForSeconds(1.5f);
+        isInvincible = false;
+    }
+
+    public void ResetToSpawn()
     {
         TeleportTo(spawnPosition, spawnRotation);
         engineMultiplier = 0f;
         carStarted = false;
+        isBraking = false;
+        isInvincible = false;
     }
 
     void ApplyEngineForce()
