@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
@@ -6,11 +7,21 @@ public class levelManager : MonoBehaviour
 {
     public static levelManager Instance;
 
-    [Header("Level Spawn Points (one per level, in order)")]
+    [Header("Level Spawn Points")]
     public Transform[] levelSpawnPoints;
 
-    int currentLevel = 0;
     CarController car;
+
+    // NORMAL MODE
+    int currentLevel = 0;
+
+    // CAMPAIGN MODE
+    int campaignLevel = 1;
+    int currentMapIndex;
+    List<int> playedMaps = new List<int>();
+
+    // TRUE = random campaign mode
+    public static bool campaignMode = false;
 
     void Awake()
     {
@@ -22,14 +33,17 @@ public class levelManager : MonoBehaviour
     {
         car = FindAnyObjectByType<CarController>();
 
-        if (levelSpawnPoints.Length > 0)
+        if (campaignMode)
         {
-            car.TeleportTo(levelSpawnPoints[0].position, levelSpawnPoints[0].eulerAngles.z);
-            LevelTitleUI.Instance.ShowTitle(0); // Show Level1 title on game start
+            StartRandomLevel();
+        }
+        else
+        {
+            StartNormalLevel();
         }
     }
 
-     void Update()
+    void Update()
     {
         if (Keyboard.current != null &&
             Keyboard.current.qKey.wasPressedThisFrame &&
@@ -41,48 +55,96 @@ public class levelManager : MonoBehaviour
     }
 
 
-    public void AdvanceToNextLevel()
-    {
-        currentLevel++;
-        
-        if (currentLevel >= levelSpawnPoints.Length)
-        {
-            car.carStarted = false;
-            car.engineMultiplier = 0f;
-            car.isFinishing = false;
-            car.ReleaseBrake();
-            SceneManager.LoadScene("Main");
-            Debug.Log("All levels complete!");
-            return;
-        }
-
-        TeleportToCurrentLevel();
-    }
-
-    
-
-    private void TeleportToCurrentLevel()
+    //Normal mode
+    void StartNormalLevel()
     {
         Transform spawn = levelSpawnPoints[currentLevel];
+
         car.TeleportTo(spawn.position, spawn.eulerAngles.z);
+
         car.ReleaseBrake();
         car.isFinishing = false;
         car.carStarted = false;
         car.engineMultiplier = 0f;
+
         LevelTitleUI.Instance.ShowTitle(currentLevel);
     }
 
+    //camp mode
+    void StartRandomLevel()
+    {
+        if (playedMaps.Count >= levelSpawnPoints.Length)
+        {
+            playedMaps.Clear();
+        }
+
+        List<int> availableMaps = new List<int>();
+
+        for (int i = 0; i < levelSpawnPoints.Length; i++)
+        {
+            if (!playedMaps.Contains(i))
+            {
+                availableMaps.Add(i);
+            }
+        }
+
+        currentMapIndex = availableMaps[Random.Range(0, availableMaps.Count)];
+
+        playedMaps.Add(currentMapIndex);
+
+        Transform spawn = levelSpawnPoints[currentMapIndex];
+
+        car.TeleportTo(spawn.position, spawn.eulerAngles.z);
+
+        car.ReleaseBrake();
+        car.isFinishing = false;
+        car.carStarted = false;
+        car.engineMultiplier = 0f;
+
+        // Shows Level 1, 2, 3...
+        LevelTitleUI.Instance.ShowTitle(campaignLevel - 1);
+    }
+
+    public void AdvanceToNextLevel()
+    {
+        if (campaignMode)
+        {
+            campaignLevel++;
+            StartRandomLevel();
+        }
+        else
+        {
+            currentLevel++;
+
+            if (currentLevel >= levelSpawnPoints.Length)
+            {
+                car.carStarted = false;
+                car.engineMultiplier = 0f;
+                car.isFinishing = false;
+                car.ReleaseBrake();
+
+                SceneManager.LoadScene("Main");
+                return;
+            }
+
+            StartNormalLevel();
+        }
+    }
 
     public void RestartFromBeginning()
     {
         currentLevel = 0;
-        Transform spawn = levelSpawnPoints[0];
-        car.TeleportTo(spawn.position, spawn.eulerAngles.z);
-        car.ReleaseBrake();
-        car.isFinishing = false;
-        car.carStarted = false;
-        car.engineMultiplier = 0f;
-        LevelTitleUI.Instance.ShowTitle(0);
-    }
 
+        campaignLevel = 1;
+        playedMaps.Clear();
+
+        if (campaignMode)
+        {
+            StartRandomLevel();
+        }
+        else
+        {
+            StartNormalLevel();
+        }
+    }
 }

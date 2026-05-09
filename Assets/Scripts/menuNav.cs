@@ -7,6 +7,13 @@ public class menuNav : MonoBehaviour
 
     public void PlayGame()
     {
+        levelManager.campaignMode = false;
+        SceneManager.LoadScene("Game");
+    }
+
+    public void PlayCampaign()
+    {
+        levelManager.campaignMode = true;
         SceneManager.LoadScene("Game");
     }
 
