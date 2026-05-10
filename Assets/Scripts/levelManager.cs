@@ -66,6 +66,7 @@ public class levelManager : MonoBehaviour
         car.engineMultiplier = 0f;
         LivesSystem.Instance.ResetLives();
         LevelTitleUI.Instance.ShowTitle(currentLevel);
+        CoinSpawner.Instance.SpawnCoinsForLevel(currentLevel, spawn.position); // Add this
     }
 
     //camp mode
@@ -92,6 +93,7 @@ public class levelManager : MonoBehaviour
         car.engineMultiplier = 0f;
         LivesSystem.Instance.ResetLives();
         LevelTitleUI.Instance.ShowTitle(campaignLevel - 1);
+        CoinSpawner.Instance.SpawnCoinsForLevel(currentMapIndex, spawn.position);
     }
 
     public void AdvanceToNextLevel()
@@ -130,5 +132,6 @@ public class levelManager : MonoBehaviour
         car.carStarted = false;
         car.engineMultiplier = 0f;
         LevelTitleUI.Instance.ShowTitle(0);
+        CoinSpawner.Instance.SpawnCoinsForLevel(0, spawn.position);
     }
 }
