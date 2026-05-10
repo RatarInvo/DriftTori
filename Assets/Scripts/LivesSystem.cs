@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LivesSystem : MonoBehaviour
 {
@@ -94,6 +95,12 @@ public class LivesSystem : MonoBehaviour
 
     void OnGameOver()
     {
+
+        if (levelManager.campaignMode)
+        {
+            SceneManager.LoadScene("Main");
+            return;
+        }
         // All lives gone - reset to level start with fresh lives
         ResetLives();
 

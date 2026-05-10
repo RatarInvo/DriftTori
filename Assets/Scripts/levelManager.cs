@@ -91,7 +91,6 @@ public class levelManager : MonoBehaviour
         car.isFinishing = false;
         car.carStarted = false;
         car.engineMultiplier = 0f;
-        LivesSystem.Instance.ResetLives();
         LevelTitleUI.Instance.ShowTitle(campaignLevel - 1);
         CoinSpawner.Instance.SpawnCoinsForLevel(currentMapIndex, spawn.position);
     }

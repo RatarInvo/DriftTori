@@ -5,10 +5,10 @@ using UnityEngine;
 public class CarController : MonoBehaviour
 {
     [Header("Car Settings")]
-    public float AccelerationFactor = 15.0f;
+    public float AccelerationFactor = 10.0f;
     public float turnFactor = 4f;
     public float driftFactor = 0.99f;
-    public float maxSpeed = 20;
+    public float maxSpeed = 25;
 
     [Header("Engine Ramp Up")]
     [Tooltip("How many seconds to reach full acceleration from a standstill")]
@@ -106,7 +106,6 @@ public class CarController : MonoBehaviour
         if (isFinishing) return;
         if (isInvincible) return;
 
-        // Play sound here instead of in ResetToSpawn
         AudioManager.Instance.PlaySFX(wallHitClip);
 
         Vector2 bounceDirection = collision.contacts[0].normal;
