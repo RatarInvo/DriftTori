@@ -48,12 +48,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Car
-    uniqueID: 3358137479
-    locked: 0
-  - name: Hearts
-    uniqueID: 261167673
-    locked: 0
   m_RenderingLayers:
   - Default
   m_MigratedRenderPipelines: []
