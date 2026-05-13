@@ -8,7 +8,6 @@ public class wheelTrail : MonoBehaviour
     [Header("Drift Sound")]
     public AudioClip driftClip;
 
-    bool initialized = false;
 
     void Awake()
     {
@@ -23,14 +22,12 @@ public class wheelTrail : MonoBehaviour
         if (driftClip != null)
         {
             AudioManager.Instance.InitDrift(driftClip);
-            initialized = true;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!initialized) return;
 
         if (carController.isTireScreeching(out float lateralVelocity))
         {

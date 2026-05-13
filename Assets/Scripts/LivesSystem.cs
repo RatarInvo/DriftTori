@@ -31,7 +31,7 @@ public class LivesSystem : MonoBehaviour
     void Start()
     {
         currentLives = maxLives;
-        heartsContainer.SetActive(true);
+        heartsContainer.SetActive(false);    
         UpdateHearts();
     }
 
@@ -47,14 +47,17 @@ public class LivesSystem : MonoBehaviour
 
     IEnumerator LoseLifeSequence()
     {
+        heartsContainer.SetActive(true);    
+
         int losingIndex = currentLives - 1;
         currentLives--;
 
         if (currentLives <= 0)
             isGameOver = true;
 
+        // Update heart visuals
         for (int i = 0; i < heartObjects.Length; i++)
-            heartObjects[i].SetActive(i <= losingIndex);
+            heartObjects[i].SetActive(i < currentLives);
 
         // Blink the losing heart
         for (int i = 0; i < blinkCount; i++)
@@ -68,6 +71,8 @@ public class LivesSystem : MonoBehaviour
         heartObjects[losingIndex].SetActive(false);
 
         yield return new WaitForSeconds(showAfterBlinkDuration);
+
+        heartsContainer.SetActive(false);
 
         if (currentLives <= 0)
             OnGameOver();
@@ -83,7 +88,7 @@ public class LivesSystem : MonoBehaviour
 
         currentLives = maxLives;
         isGameOver = false;
-        heartsContainer.SetActive(true);
+        heartsContainer.SetActive(false);     
         UpdateHearts();
     }
 
@@ -95,13 +100,12 @@ public class LivesSystem : MonoBehaviour
 
     void OnGameOver()
     {
-
         if (levelManager.campaignMode)
         {
             SceneManager.LoadScene("Main");
             return;
         }
-        // All lives gone - reset to level start with fresh lives
+
         ResetLives();
 
         CarController car = FindAnyObjectByType<CarController>();
