@@ -66,7 +66,6 @@ public class levelManager : MonoBehaviour
         car.engineMultiplier = 0f;
         LivesSystem.Instance.ResetLives();
         LevelTitleUI.Instance.ShowTitle(currentLevel);
-        CoinSpawner.Instance.SpawnCoinsForLevel(currentLevel, spawn.position); // Add this
     }
 
     //camp mode
