@@ -57,6 +57,8 @@ public class AudioManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        StopDrift();
+
         if (scene.name == "Main")
             PlayMusic(mainMenuMusic);
         else

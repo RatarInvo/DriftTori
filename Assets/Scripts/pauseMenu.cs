@@ -45,6 +45,7 @@ public class pauseMenu : MonoBehaviour
         pausePanel.SetActive(true);
         Time.timeScale = 0f;
         AudioManager.Instance.StopDrift();
+        HUDManager.Instance.PauseTimer(); // Add this
     }
 
     public void Resume()
@@ -53,6 +54,7 @@ public class pauseMenu : MonoBehaviour
         pausePanel.SetActive(false);
         Time.timeScale = 1f;
         AudioManager.Instance.UnPauseDrift();
+        HUDManager.Instance.ResumeTimer(); // Add this
     }
 
     public void GoToMainMenu()

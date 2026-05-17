@@ -100,15 +100,19 @@ public class LivesSystem : MonoBehaviour
 
     void OnGameOver()
     {
-        if (levelManager.campaignMode)
-        {
-            SceneManager.LoadScene("Main");
-            return;
-        }
-
         ResetLives();
 
-        CarController car = FindAnyObjectByType<CarController>();
-        if (car != null) car.ResetToSpawn();
+        if (levelManager.campaignMode)
+        {
+            // Show game over screen instead of instant reset
+            if (GameOverUI.Instance != null)
+                GameOverUI.Instance.ShowGameOver();
+        }
+        else
+        {
+            // Normal mode keeps existing behaviour
+            CarController car = FindAnyObjectByType<CarController>();
+            if (car != null) car.ResetToSpawn();
+        }
     }
 }

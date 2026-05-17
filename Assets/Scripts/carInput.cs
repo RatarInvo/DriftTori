@@ -27,6 +27,7 @@ public class carInput : MonoBehaviour
                 gameStarted = true;
                 carController.StartCar();
                 LevelTitleUI.Instance.HideTitle();
+                HUDManager.Instance.StartTimer();
 
                 // Play engine start sound
                 if (engineStartClip != null)
