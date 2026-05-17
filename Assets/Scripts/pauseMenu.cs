@@ -32,6 +32,8 @@ public class pauseMenu : MonoBehaviour
 
     void Update()
     {
+        if (GameOverUI.Instance != null && GameOverUI.Instance.gameOverPanel.activeSelf) return;
+
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (isPaused) Resume();
@@ -45,7 +47,7 @@ public class pauseMenu : MonoBehaviour
         pausePanel.SetActive(true);
         Time.timeScale = 0f;
         AudioManager.Instance.StopDrift();
-        HUDManager.Instance.PauseTimer(); // Add this
+        HUDManager.Instance.PauseTimer();
     }
 
     public void Resume()
@@ -54,7 +56,7 @@ public class pauseMenu : MonoBehaviour
         pausePanel.SetActive(false);
         Time.timeScale = 1f;
         AudioManager.Instance.UnPauseDrift();
-        HUDManager.Instance.ResumeTimer(); // Add this
+        HUDManager.Instance.ResumeTimer();
     }
 
     public void GoToMainMenu()

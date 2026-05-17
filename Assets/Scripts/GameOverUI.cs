@@ -28,7 +28,6 @@ public class GameOverUI : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    // Wire to Restart Campaign button
     public void RestartCampaign()
     {
         Time.timeScale = 1f;
@@ -36,7 +35,6 @@ public class GameOverUI : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    // Wire to Main Menu button
     public void GoToMainMenu()
     {
         Time.timeScale = 1f;
