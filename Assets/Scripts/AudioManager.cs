@@ -107,6 +107,18 @@ public class AudioManager : MonoBehaviour
         driftSource.volume = Mathf.Lerp(driftSource.volume, targetVolume * sfxVolume, Time.deltaTime * 8f);
     }
 
+    public void StopDrift()
+    {
+        driftSource.volume = 0f;
+        driftSource.Pause();
+    }
+
+    public void UnPauseDrift()
+    {
+        if (driftSource.clip != null)
+            driftSource.UnPause();
+    }
+
     public void SetMusicVolume(float volume)
     {
         musicVolume = volume;
