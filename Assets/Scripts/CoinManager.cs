@@ -34,6 +34,6 @@ public class CoinManager : MonoBehaviour
     void UpdateUI()
     {
         if (coinText != null)
-            coinText.text = $"Coins: {totalCoins}";
+            coinText.text = $"{totalCoins}";
     }
 }
