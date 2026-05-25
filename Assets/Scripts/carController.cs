@@ -20,6 +20,12 @@ public class CarController : MonoBehaviour
     [Header("Wall Bounce")]
     public float bounceForce = 8f;
 
+    [Header("Stuck Detection")]
+    [Tooltip("Speed (units/s) below which the car is considered stuck")]
+    public float stuckSpeedThreshold = 0.5f;
+    [Tooltip("Seconds the car must stay below the threshold before auto-reset")]
+    public float stuckTimeLimit = 2.5f;
+
     bool isInvincible = false;
 
     public bool carStarted = false;
@@ -33,6 +39,8 @@ public class CarController : MonoBehaviour
     float steeringInput = 0;
     float rotationAngle = 0;
     float velocityVsUp = 0;
+
+    float stuckTimer = 0f;
 
     // Spawn state
     Vector2 spawnPosition;
@@ -98,6 +106,24 @@ public class CarController : MonoBehaviour
         ApplyEngineForce();
         KillorthogonalVelocity();
         ApplySeering();
+
+        // Stuck detection
+        if (!isFinishing && engineMultiplier >= 1f)
+        {
+            if (carRigidbody2D.linearVelocity.magnitude < stuckSpeedThreshold)
+            {
+                stuckTimer += Time.fixedDeltaTime;
+                if (stuckTimer >= stuckTimeLimit)
+                {
+                    stuckTimer = 0f;
+                    ResetToSpawn();
+                }
+            }
+            else
+            {
+                stuckTimer = 0f;
+            }
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -130,6 +156,7 @@ public class CarController : MonoBehaviour
         carStarted = false;
         isBraking = false;
         isInvincible = false;
+        stuckTimer = 0f;
     }
 
     void ApplyEngineForce()
@@ -167,6 +194,7 @@ public class CarController : MonoBehaviour
         rotationAngle = zRotation;
         spawnPosition = position;
         spawnRotation = zRotation;
+        stuckTimer = 0f;
     }
 
     public void SetInputVector(Vector2 inputVector)

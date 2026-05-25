@@ -7,6 +7,7 @@ public class CoinManager : MonoBehaviour
 
     [Header("UI")]
     public TextMeshProUGUI coinText;
+    public GameObject coinUIRoot;
 
     int totalCoins;
 
@@ -20,6 +21,9 @@ public class CoinManager : MonoBehaviour
 
     void Start()
     {
+        if (coinUIRoot != null)
+            coinUIRoot.SetActive(levelManager.campaignMode);
+
         UpdateUI();
     }
 
@@ -29,6 +33,26 @@ public class CoinManager : MonoBehaviour
         PlayerPrefs.SetInt("TotalCoins", totalCoins);
         PlayerPrefs.Save();
         UpdateUI();
+    }
+
+    public void ResetCoins()
+    {
+        totalCoins = 0;
+        PlayerPrefs.SetInt("TotalCoins", 0);
+        PlayerPrefs.Save();
+        UpdateUI();
+    }
+
+    public int GetCoins() => totalCoins;
+
+    public bool SpendCoins(int amount)
+    {
+        if (totalCoins < amount) return false;
+        totalCoins -= amount;
+        PlayerPrefs.SetInt("TotalCoins", totalCoins);
+        PlayerPrefs.Save();
+        UpdateUI();
+        return true;
     }
 
     void UpdateUI()

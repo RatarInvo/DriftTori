@@ -4,7 +4,6 @@ using UnityEngine.SceneManagement;
 public class GameOverUI : MonoBehaviour
 {
     public static GameOverUI Instance;
-
     public GameObject gameOverPanel;
 
     void Awake()
@@ -30,6 +29,8 @@ public class GameOverUI : MonoBehaviour
 
     public void RestartCampaign()
     {
+        CoinManager.Instance.ResetCoins();
+        UpgradeManager.Instance.ResetUpgrades();
         Time.timeScale = 1f;
         levelManager.campaignMode = true;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -37,6 +38,11 @@ public class GameOverUI : MonoBehaviour
 
     public void GoToMainMenu()
     {
+        if (levelManager.campaignMode)
+        {
+            CoinManager.Instance.ResetCoins();
+            UpgradeManager.Instance.ResetUpgrades();
+        }
         Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }

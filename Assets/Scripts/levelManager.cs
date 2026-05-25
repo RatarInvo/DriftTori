@@ -102,6 +102,7 @@ public class levelManager : MonoBehaviour
         {
             campaignLevel++;
             StartRandomLevel();
+            UpgradeUI.Instance.ShowUpgradePanel();
         }
         else
         {

@@ -16,24 +16,38 @@ public class pauseMenu : MonoBehaviour
 
     void Start()
     {
-        // Set sliders to current AudioManager volumes
         if (musicSlider != null)
         {
-            musicSlider.value = 1f;
-            musicSlider.onValueChanged.AddListener(AudioManager.Instance.SetMusicVolume);
+            musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 1f);
+            AudioManager.Instance.SetMusicVolume(musicSlider.value);
+            musicSlider.onValueChanged.AddListener(OnMusicChanged);
         }
-
         if (sfxSlider != null)
         {
-            sfxSlider.value = 1f;
-            sfxSlider.onValueChanged.AddListener(AudioManager.Instance.SetSFXVolume);
+            sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 1f);
+            AudioManager.Instance.SetSFXVolume(sfxSlider.value);
+            sfxSlider.onValueChanged.AddListener(OnSFXChanged);
         }
+    }
+
+    void OnMusicChanged(float value)
+    {
+        AudioManager.Instance.SetMusicVolume(value);
+        PlayerPrefs.SetFloat("MusicVolume", value);
+        PlayerPrefs.Save();
+    }
+
+    void OnSFXChanged(float value)
+    {
+        AudioManager.Instance.SetSFXVolume(value);
+        PlayerPrefs.SetFloat("SFXVolume", value);
+        PlayerPrefs.Save();
     }
 
     void Update()
     {
         if (GameOverUI.Instance != null && GameOverUI.Instance.gameOverPanel.activeSelf) return;
-
+        if (UpgradeUI.Instance != null && UpgradeUI.Instance.upgradePanel.activeSelf) return;
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (isPaused) Resume();
